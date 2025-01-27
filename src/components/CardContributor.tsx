@@ -53,9 +53,10 @@ export default function CardContributor({contributors} : Props) {
             objectFit="cover"
             alt="#"
           />
-          <Flex justify={'center'} mt={-8}>
+          <Flex justify={'center'} mt={-10}>
             <Avatar
-              size="2xl"
+              minW="80px"
+              minH="80px"
               src={contributor.avatarLink}
               css={{
                 border: '2px solid white',

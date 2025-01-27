@@ -237,8 +237,8 @@ export default function Solve() {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault(); // Mencegah textarea menambahkan baris baru
-                handleSendMessage(); // Menjalankan fungsi pengiriman pesan
+                e.preventDefault()
+                handleSendMessage()
               }
             }}
           />
