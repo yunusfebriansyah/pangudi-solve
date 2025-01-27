@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react"
-import { Container, Box, VStack, IconButton, Text, Flex, Button, Heading, Textarea, Stack, Group } from "@chakra-ui/react"
-import { LuArrowDown, LuArrowRight } from "react-icons/lu"
+import { Container, Box, VStack, IconButton, Text, Flex, Button, Heading, Textarea, Stack, Group, createListCollection } from "@chakra-ui/react"
+import { LuArrowDown, LuSendHorizontal } from "react-icons/lu"
 import Groq from "groq-sdk"
 import Particle from "./Particle"
 import MarkdownDisplay from "@/components/MarkdownDisplay"
+import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select"
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -35,6 +36,15 @@ type Message = {
   text: string
   sender: "user" | "ai"
 }
+
+const frameworks = createListCollection({
+  items: [
+    { label: "Bahasa Indonesia", value: "id" },
+    { label: "English Language", value: "en" },
+  ],
+})
+
+let addAssignmentMessage = '. tolong jawab dengan bahasa indonesia!'
 
 export default function Solve() {
   const [messages, setMessages] = useState<Message[]>([
@@ -80,12 +90,11 @@ export default function Solve() {
       text: inputValue,
       sender: "user",
     }
-
-
+    
     // Tambahkan respon AI (disederhanakan)
     const aiResponse: Message = {
       id: messages.length + 2,
-      text: await main(inputValue),
+      text: await main(inputValue + addAssignmentMessage),
 //       text : `
 // # Title Pertama
 // ## Hello World: A Comprehensive Guide
@@ -146,10 +155,33 @@ export default function Solve() {
                 textStyle="sm"
                 ms={1}
               >
-                v.1.0
+                v.1.1
               </Text>
             </Text>
           </Heading>
+
+          <SelectRoot variant='outline' collection={frameworks} size='xs'
+            maxW={{ 
+              base: "70%",
+              sm: "20%"
+            }}
+            onValueChange={(item) => {
+              if (item.value.toString() == 'en')
+                addAssignmentMessage = '. please answer with english language!'
+            }}
+           >
+            <SelectTrigger>
+              <SelectValueText placeholder="Bahasa Indonesia" />
+            </SelectTrigger>
+            <SelectContent>
+              {frameworks.items.map((lang) => (
+                <SelectItem item={lang} key={lang.value}>
+                  {lang.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </SelectRoot>
+
           {messages.map((msg) => (
             <Flex
               key={msg.id}
@@ -211,7 +243,7 @@ export default function Solve() {
             }}
           />
           <IconButton colorScheme="blue" onClick={handleSendMessage} h={'full'}>
-            <LuArrowRight />
+            <LuSendHorizontal />
           </IconButton>
         </Group>
         </Stack>
