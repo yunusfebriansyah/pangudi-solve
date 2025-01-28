@@ -155,7 +155,7 @@ export default function Solve() {
                 textStyle="sm"
                 ms={1}
               >
-                v.1.1
+                v.1.2
               </Text>
             </Text>
           </Heading>
