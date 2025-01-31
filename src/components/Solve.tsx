@@ -27,7 +27,7 @@ export async function getGroqChatCompletion(question: string) {
         content: question,
       },
     ],
-    model: import.meta.env.VITE_MODEL_ID,
+    model: 'deepseek-r1-distill-llama-70b',
   })
 }
 
