@@ -39,7 +39,7 @@ function Landing()
             </Text>
           </Heading>
           <Text textStyle="xs">
-            Discover the future of intelligent problem-solving with pangudiSolve, where advanced AI transforms your questions into actionable insights. Designed for individuals and businesses alike, pangudiSolve simplifies complexity and delivers clarity at the speed of thought.
+            Discover the future of intelligent problem-solving with PangudiSolve, where advanced AI transforms your questions into actionable insights. Designed for individuals and businesses alike, PangudiSolve simplifies complexity and delivers clarity at the speed of thought.
           </Text>
           <Stack
             direction={'column'}

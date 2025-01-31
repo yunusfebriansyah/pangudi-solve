@@ -5,6 +5,7 @@ import Groq from "groq-sdk"
 import Particle from "./Particle"
 import MarkdownDisplay from "@/components/MarkdownDisplay"
 import { SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValueText } from "@/components/ui/select"
+import { getAppVersion, getIsProduction, getSampleText } from './AppSettings';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -26,7 +27,7 @@ export async function getGroqChatCompletion(question: string) {
         content: question,
       },
     ],
-    model: "llama3-8b-8192",
+    model: import.meta.env.VITE_MODEL_ID,
   })
 }
 
@@ -56,6 +57,7 @@ export default function Solve() {
   ])
   const [inputValue, setInputValue] = useState<string>("")
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   // Ref untuk scrolling
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -84,55 +86,28 @@ export default function Solve() {
 
   const handleSendMessage  = async () => {
     if (inputValue.trim() === "") return
-    // Tambahkan pesan pengguna
+    
+    setIsLoading(true)
+
     const userMessage: Message = {
       id: messages.length + 1,
       text: inputValue,
       sender: "user",
     }
+    let textResponse = getSampleText()
+    if( getIsProduction() )
+      textResponse = await main(inputValue + addAssignmentMessage)
     
     // Tambahkan respon AI (disederhanakan)
     const aiResponse: Message = {
       id: messages.length + 2,
-      text: await main(inputValue + addAssignmentMessage),
-//       text : `
-// # Title Pertama
-// ## Hello World: A Comprehensive Guide
-
-// ### Introduction
-// This is a **detailed** markdown document exploring various *formatting* options and syntax.
-
-// ### Code Demonstration
-// Inline code: \`console.log("Hello, World!")\` 
-
-// Code block with syntax highlighting:
-// \`\`\`javascript
-// function greetWorld() {
-//   const message = "Hello, World!";
-//   console.log(message);
-//   return message;
-// }
-// \`\`\`
-
-// ### Lists
-// - First item
-// - Second item
-// - Third item
-// - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-// ### Table
-// | Feature | Description | Status |
-// |---------|-------------|--------|
-// | Markdown | Lightweight markup language | Active |
-// | Rendering | Convert text to formatted HTML | Supported |
-// | Syntax | Easy to read and write | Excellent |
-
-// `,
       sender: "ai",
+      text: textResponse,
     }
 
     setMessages([...messages, userMessage, aiResponse])
     setInputValue("")
+    setIsLoading(false)
     
   }
 
@@ -155,7 +130,7 @@ export default function Solve() {
                 textStyle="sm"
                 ms={1}
               >
-                v.1.2
+                {getAppVersion()}
               </Text>
             </Text>
           </Heading>
@@ -242,7 +217,11 @@ export default function Solve() {
               }
             }}
           />
-          <IconButton colorScheme="blue" onClick={handleSendMessage} h={'full'}>
+          <IconButton
+            colorScheme="blue"
+            onClick={handleSendMessage}
+            h={'full'}
+            loading={isLoading}>
             <LuSendHorizontal />
           </IconButton>
         </Group>
